@@ -18,9 +18,22 @@
 
 ---
 
-## 📸 System Overview
+## 📱 App Interface
 
-![Dashboard Preview](https://via.placeholder.com/800x400?text=MoodMate+Dashboard+Preview)
+| Agentic Chatbot | Smart Journaling |
+|:---:|:---:|
+| <img src="Moodmate%20pics/ChatBot.png" width="400"> | <img src="Moodmate%20pics/Journal.png" width="400"> |
+| **Context-Aware Conversations** | **Sentiment Analysis & Scoring** |
+
+| Habit Builder | Tweet Risk Analyzer |
+|:---:|:---:|
+| <img src="Moodmate%20pics/HabitFlow.png" width="400"> | <img src="Moodmate%20pics/TweetAnalyzer.png" width="400"> |
+| **AI-Suggested Micro Habits** | **External Risk Detection** |
+
+| Psychologist Booking | Secure Auth |
+|:---:|:---:|
+| <img src="Moodmate%20pics/SessionBooking.png" width="400"> | <img src="Moodmate%20pics/Web2Auth.png" width="400"> |
+| **Expert Consultation** | **JWT & Bcrypt Security** |
 
 ---
 
