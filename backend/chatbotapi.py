@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import APIRouter, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx, os, difflib
@@ -8,16 +8,9 @@ from uuid import uuid4
 from datetime import datetime
 
 load_dotenv()
-app = FastAPI()
+router = APIRouter()
 
 # CORS setup
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # DynamoDB setup
 dynamodb = boto3.resource("dynamodb", region_name="ap-south-1")
@@ -61,7 +54,7 @@ def get_uncompleted_habits_today(user_id: str):
     return pending_habits
 
 # Main chat route
-@app.post("/chat")
+@router.post("/chat")
 async def chat(message: Message, request: Request):
     user_input = message.user_input.strip()
     user_id = message.user_id
@@ -115,7 +108,7 @@ async def chat(message: Message, request: Request):
     # 💬 Make request to RAG server
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post("http://13.127.84.121:8000/query", json={"query": full_prompt}, timeout=60.0)
+            response = await client.post("http://65.1.110.82:8000/query", json={"query": full_prompt}, timeout=60.0)
             if response.status_code != 200:
                 print("❌ AWS RAG Error:", response.text)
                 return {

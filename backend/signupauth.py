@@ -1,21 +1,13 @@
 import uuid
 import bcrypt
 import boto3
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from botocore.exceptions import ClientError
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+router = APIRouter()
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('UserAuth')
@@ -45,7 +37,7 @@ def save_user(email: str, user_id: str, hashed_pw: str, consent: bool) -> bool:
         print("❌ DynamoDB error:", e.response['Error']['Message'])
         return False
 
-@app.post("/signup")
+@router.post("/signup")
 def signup(payload: SignupRequest):
     if not payload.consent:
         raise HTTPException(status_code=400, detail="Consent required")

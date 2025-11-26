@@ -1,20 +1,14 @@
 import bcrypt
 import boto3
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from botocore.exceptions import ClientError
 
-app = FastAPI()
+router = APIRouter()
 
 # ✅ Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Adjust to your frontend domain in prod
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('UserAuth')
@@ -23,7 +17,7 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
-@app.post("/login")
+@router.post("/login")
 def login(payload: LoginRequest):
     try:
         response = table.scan(

@@ -6,7 +6,7 @@ import requests
 from ibm_watsonx_ai.foundation_models import ModelInference
 from ibm_watsonx_ai.credentials import Credentials
 from ibm_watsonx_ai import APIClient
-from fastapi import FastAPI
+from fastapi import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from collections import defaultdict, Counter
 from dotenv import dotenv_values
@@ -56,16 +56,6 @@ guardian_model = ModelInference(
     credentials=credentials,
     project_id="1cb8c38f-d650-41fe-9836-86659006c090",
     params={"decoding_method": "greedy", "max_new_tokens": 100}
-)
-
-app = FastAPI()
-app.include_router(router)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Set to your frontend URL in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 def send_supportive_message(tweet_text):
@@ -259,7 +249,7 @@ for job in scheduler.get_jobs():
     print(f"🕒 Job '{job.id}' next run: {job.next_run_time}")
 
 
-@app.get("/api/trigger_check")
+@router.get("/api/trigger_check")
 def trigger_check():
     return {
         "show_popup": popup_state["show_popup"],
@@ -269,7 +259,7 @@ def trigger_check():
     }
 
 
-@app.get("/analyze_tweets/{username}")
+@router.get("/analyze_tweets/{username}")
 def analyze_tweets(username: str, max_results: int = 5):
     try:
         user_id = get_user_id(username)
@@ -290,7 +280,7 @@ def analyze_tweets(username: str, max_results: int = 5):
         return {"error": str(e)}
     
 
-@app.get("/analyze_all/{username}")
+@router.get("/analyze_all/{username}")
 def analyze_all(username: str, max_results: int = 5):
     try:
         user_id = get_user_id(username)
@@ -314,7 +304,7 @@ def analyze_all(username: str, max_results: int = 5):
     except Exception as e:
         return {"error": str(e)}
 
-@app.get("/api/read_analysis")
+@router.get("/api/read_analysis")
 def read_analyzed_tweets():
     try:
         table = dynamodb.Table('TweetRiskAnalysis') 
@@ -346,6 +336,6 @@ def read_analyzed_tweets():
             "error": str(e)
         }
     
-@app.get("/ping")
+@router.get("/ping")
 def ping():
     return {"status": "OK", "time": datetime.utcnow()}
