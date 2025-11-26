@@ -1,5 +1,5 @@
 import boto3
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
@@ -29,15 +29,7 @@ class StreakUpdateInput(BaseModel):
     habit_id: str
 
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # 👈 match your frontend port!
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+router = APIRouter()
 
 dynamodb = boto3.resource("dynamodb", region_name="ap-south-1")  # change region if needed
 table = dynamodb.Table("HabitFlowProgress")  # make sure this exists
@@ -64,7 +56,7 @@ guardian_model = ModelInference(
 class HabitInput(BaseModel):
     bad_habit: str
 
-@app.post("/suggest_replacements")
+@router.post("/suggest_replacements")
 def suggest_replacements(data: HabitInput):
     try:
         prompt = (
@@ -81,7 +73,7 @@ def suggest_replacements(data: HabitInput):
         print("🧨 Granite LLM Error:", str(e))
         return {"suggestions": ["Take a short walk", "Drink water", "Stretch mindfully"]}
 
-@app.post("/habitflow/save-progress")
+@router.post("/habitflow/save-progress")
 def save_progress(data: HabitProgressInput):
     habit_id = str(uuid4())
     table.put_item(Item={
@@ -97,7 +89,7 @@ def save_progress(data: HabitProgressInput):
     })
     return {"message": "✅ Habit progress saved separately!"}
 
-@app.get("/habitflow/get-progress")
+@router.get("/habitflow/get-progress")
 def get_habit_progress(user_id: str = None):
     try:
         if user_id:
@@ -113,7 +105,7 @@ def get_habit_progress(user_id: str = None):
         return {"error": str(e), "habits": []}
     
 
-@app.post("/habitflow/increment-streak")
+@router.post("/habitflow/increment-streak")
 def increment_streak(data: StreakUpdateInput):
     try:
         response = table.get_item(Key={"user_id": data.user_id, "habit_id": data.habit_id})

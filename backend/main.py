@@ -4,6 +4,8 @@ from chatbotapi import router as chatbot_router
 from loginauth import router as auth_router
 from signupauth import router as signup_router
 from analyzetweets import router as analyze_router
+from googlefit import router as googlefit_router
+from habit import router as habit_router
 
 app = FastAPI()
 
@@ -20,3 +22,5 @@ app.include_router(chatbot_router)
 app.include_router(auth_router)
 app.include_router(signup_router)
 app.include_router(analyze_router)
+app.include_router(googlefit_router)
+app.include_router(habit_router)

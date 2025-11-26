@@ -1,5 +1,5 @@
 # Example using FastAPI
-from fastapi import FastAPI, Request
+from fastapi import APIRouter, Request
 from pydantic import BaseModel
 import boto3
 from datetime import datetime
@@ -7,14 +7,7 @@ from decimal import Decimal
 from fastapi.middleware.cors import CORSMiddleware
 
 
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5174"],  # 👈 match your frontend exactly
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+router = APIRouter()
 
 
 
@@ -27,7 +20,7 @@ class HealthData(BaseModel):
     sleep: float
     hrv: float
 
-@app.post("/save-health-data")
+@router.post("/save-health-data")
 async def save_health_data(data: HealthData):
     table.put_item(
         Item={
